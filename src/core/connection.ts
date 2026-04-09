@@ -721,10 +721,9 @@ export async function connectToDevice(
         });
 
         try {
-            // Metro requires a valid Origin header matching the server's host
-            const wsUrl = new URL(device.webSocketDebuggerUrl);
-            const origin = `http://${wsUrl.hostname}:${wsUrl.port}`;
-            const ws = new WebSocket(device.webSocketDebuggerUrl, { headers: { Origin: origin } });
+            // Do not send an Origin header — Expo SDK 55+ Metro inspector proxy
+            // rejects WebSocket upgrades that include one, causing immediate close (1006)
+            const ws = new WebSocket(device.webSocketDebuggerUrl);
 
             ws.on("open", async () => {
                 // Release connection lock
